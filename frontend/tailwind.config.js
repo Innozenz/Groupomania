@@ -5,16 +5,16 @@ module.exports = {
         extend: {
             colors: {
                 groupomania_dark: {
-                    DEFAULT: "#030303",
-                    brighter: "#1a1a1a",
-                    brightest: "#272728",
+                    DEFAULT: "#FFFFFF",
+                    brighter: "#091f43",
+                    brightest: "#d1515a",
                 },
                 groupomania_border: {
-                    DEFAULT: "#343536",
+                    DEFAULT: "#d1515a",
                 },
                 groupomania_text: {
                     DEFAULT: "rgb(215,218,220)",
-                    darker: "#818384",
+                    darker: "#F5F5DC",
                 },
             },
         },
