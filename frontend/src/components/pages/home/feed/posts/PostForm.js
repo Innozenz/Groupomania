@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import Avatar from "../../images/avatar.png";
-import {Check, FileUpload, UploadFile} from "@mui/icons-material";
-import {Button} from "@mui/material";
+import {Check, FileUpload} from "@mui/icons-material";
+import PostDataService from '../../../../../services/PostService'
 
 const useForceUpdate = () => useState()[1];
 
@@ -23,10 +22,10 @@ const PostForm = () => {
         }
     }
 
-    function onSubmit(e) {
-        e.preventDefault();
-        const data = new FormData(fileInput.current.files);
-    }
+    // function onSubmit(e) {
+    //     e.preventDefault();
+    //     const data = new FormData(fileInput.current.files);
+    // }
 
     function fileNames() {
         const {current} = fileInput;
@@ -41,6 +40,38 @@ const PostForm = () => {
         return null;
     }
 
+    const initialPostState = {
+        id: null,
+        content: ""
+    };
+    const [post, setPost] = useState(initialPostState);
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleInputChange = event => {
+        const {name, value} = event.target;
+        setPost({...post, [name]: value});
+    };
+
+    const savePost = () => {
+        const data = {
+            content: post.content
+        };
+
+        PostDataService.create(data)
+            .then(response => {
+                setPost({
+                    id: response.data.id,
+                    content: response.data.content
+                });
+                setSubmitted(true);
+                console.log(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
+
+
     return (
         <div className="bg-groupomania_dark flex justify-center">
             <div className="w-full lg:w-1/2 bg-groupomania_dark px-6 py-4 text-gray-400">
@@ -48,13 +79,13 @@ const PostForm = () => {
                     <div className="flex-shrink-0 mr-3">
                         <img className="mt-2 rounded-full w-8 h-8 sm:w-14 sm:h-14"
                              src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
-                             alt="" />
+                             alt=""/>
                     </div>
-                    <form onSubmit={onSubmit}
-                          className="flex flex-grow border border-gray-300 ml-4 mr-2 rounded-md"
-                          action="">
-                        <textarea className="bg-gray-300 p-2 px-3 text-sm block w-full rounded-md placeholder-gray-800"
-                                  placeholder="New post"/>
+                    <form className="flex flex-grow border border-gray-300 ml-4 mr-2 rounded-md">
+                        <textarea
+                            className="bg-gray-300 p-2 px-3 text-sm block w-full rounded-md placeholder-gray-800 text-gray-800"
+                            placeholder="Qu'avez vous en tête?" value={post.content} onChange={handleInputChange}
+                            name="content"/>
                         <input className="hidden"
                                id="file"
                                type="file"
@@ -71,9 +102,9 @@ const PostForm = () => {
                                     Upload file(s):{" "}
                                 </FileUpload>
                             </label>
-                            <label className="p-2">
+                            <button onClick={savePost} className="p-2" type="button">
                                 <Check></Check>
-                            </label>
+                            </button>
                         </div>
                         {fileNames()}
                     </form>

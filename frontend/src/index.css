@@ -5,3 +5,20 @@
 .inputIcon {
     @apply flex items-center space-x-1 hover:bg-gray-100 flex-grow justify-center p-2 rounded-xl cursor-pointer;
 }
+
+.list {
+    text-align: left;
+    max-width: 750px;
+    margin: auto;
+}
+
+.submit-form {
+    max-width: 300px;
+    margin: auto;
+}
+
+.edit-form {
+    max-width: 300px;
+    margin: auto;
+}
+

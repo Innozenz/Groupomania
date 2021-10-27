@@ -45,7 +45,7 @@ const Login = () => {
                     </div>
                     <div className="flex items-center justify-between">
                         <button
-                            className="px-4 py-2 rounded text-white inline-block shadow-lg bg-groupomania_dark focus:bg-blue-700"
+                            className="px-4 py-2 rounded text-white inline-block shadow-lg bg-groupomania_dark-brighter focus:bg-blue-700"
                             type="submit">Sign In
                         </button>
                 <div className="flex items-center mt-3 justify-center">

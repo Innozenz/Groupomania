@@ -1,11 +1,11 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import Home from './pages/Home';
-import Login from "./pages/Login";
-import Profile from "./pages/Profile";
-import Register from "./pages/Register";
-import Edit from "./pages/Edit";
+import Home from '../pages/home/Home';
+import Login from "../pages/Login";
+import Profile from "../pages/userprofile/Profile";
+import Register from "../pages/Register";
+import EditProfile from "../pages/userprofile/EditProfile";
 
 const Main = () => {
     return (
@@ -14,7 +14,7 @@ const Main = () => {
             <Route exact path='/signin' component={Login}/>
             <Route exact path='/register' component={Register}/>
             <Route exact path='/profile' component={Profile}/>
-            <Route exact path='/edit' component={Edit}/>
+            <Route exact path='/edit' component={EditProfile}/>
         </Switch>
     );
 }

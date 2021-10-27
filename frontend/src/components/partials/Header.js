@@ -1,16 +1,6 @@
 import React from "react";
 import Icon from "../../images/icon-left-font-monochrome-black.png";
-import {
-    BellIcon,
-    ChatIcon,
-    ChevronDownIcon,
-    HomeIcon,
-    LoginIcon,
-    PlusIcon,
-    SearchIcon,
-    UserIcon
-} from '@heroicons/react/solid';
-import {useState, useEffect, useRef} from "react";
+import {UserIcon} from '@heroicons/react/solid';
 import {Link} from "react-router-dom";
 
 function Header() {
@@ -25,8 +15,8 @@ function Header() {
                     <Link to="/profile">
                     <button className="rounded-md flex ml-4 border border-black">
                         <UserIcon className="w-6 h-6 text-black m-1"/>
-                        <button className="block flex w-50 py-2 px-3 text-sm">
-                                Mon profile
+                        <button className="block flex w-50 py-2 px-2 text-sm">
+                                Mon profil
                         </button>
                     </button>
                     </Link>

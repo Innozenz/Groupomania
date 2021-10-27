@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {UploadFile} from "@mui/icons-material";
 
 const useForceUpdate = () => useState()[1];
