@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 });
 
 require("./routes/post")(app);
-require("./routes/comment")(app);
+require("./routes/comments")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
