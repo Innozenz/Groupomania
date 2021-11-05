@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {ThumbUpIcon} from "@heroicons/react/outline";
-import {ArrowCircleRightIcon, ChatAltIcon} from "@heroicons/react/solid";
+import {ChatAltIcon} from "@heroicons/react/solid";
 import PostDataService from "../../../../../services/PostService";
 import CommentDataService from "../../../../../services/CommentService";
 import CommentsForm from "../comments/CommentsForm";
+import moment from 'moment';
+import 'moment/locale/fr';
 
 
 const PostMain = () => {
@@ -18,11 +20,11 @@ const PostMain = () => {
 
     useEffect(() => {
         retrievePosts();
-    }, [posts]);
+    }, []);
 
     useEffect(() => {
         retrieveComments();
-    }, [comments]);
+    }, []);
 
     const retrievePosts = () => {
         PostDataService.getAll()
@@ -46,12 +48,14 @@ const PostMain = () => {
             });
     };
 
+    moment.locale("fr");
+
     return (
         <div className="relative flex justify-center items-center bg-groupomania_dark text-groupomania_text flex-col-reverse">
             {posts.map((post, index) => (
             <div className={"w-full lg:w-1/2 px-6 py-4 mb-24"}>
                 <div className="border border-black bg-groupomania_dark-brighter rounded-md p-4">
-                    <h5 className="text-gray-100 text-sm mb-3 ml-4">Publié par u.test123, il y a 5 heures</h5>
+                    <h5 className="text-gray-100 text-sm mb-3 ml-4">Publié par u.test123, {moment(post.createdAt).fromNow()}</h5>
                     <div className="leading-6">
                         <p>{post.content}</p>
                     </div>
@@ -87,7 +91,7 @@ const PostMain = () => {
                                         className="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
                                         <strong>Nom de l'utilisateur</strong>
                                             <span
-                                        className="text-xs text-gray-400">3h34</span>
+                                        className="text-xs text-gray-400"> {moment(comment.createdAt).fromNow()}</span>
                                         <p>{comment.content}</p>
                                     </div>
                                 </div>
