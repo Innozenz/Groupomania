@@ -50,7 +50,7 @@ const Login = () => {
                         </button>
                 <div className="flex items-center mt-3 justify-center">
                     <Link to="/register">
-                        <button className={"justify-center text-groupomania_text hover:underline"}>
+                        <button className="justify-center text-groupomania_text hover:underline">
                             Register
                         </button>
                     </Link>

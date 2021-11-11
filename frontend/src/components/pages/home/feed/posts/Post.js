@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import PostForm from "./PostForm";
 import PostMain from "./PostMain";
 
@@ -6,7 +6,6 @@ const Post = () => {
 
     return (
         <div>
-            <PostForm/>
             <PostMain/>
         </div>
     );

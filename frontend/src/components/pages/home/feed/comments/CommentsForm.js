@@ -1,38 +1,7 @@
 import React, {useState} from 'react';
-import CommentDataService from "../../../../../services/CommentService";
 import {ArrowCircleRightIcon} from "@heroicons/react/solid";
 
 const CommentsForm = () => {
-    const initialCommentState = {
-        id: null,
-        content: ""
-    };
-    const [comment, setComment] = useState(initialCommentState);
-    const [submitted, setSubmitted] = useState(false);
-
-    const handleInputChange = event => {
-        const {name, value} = event.target;
-        setComment({...comment, [name]: value});
-    };
-
-    const saveComment = () => {
-        const data = {
-            content: comment.content
-        };
-
-        CommentDataService.create(data)
-            .then(response => {
-                setComment({
-                    id: response.data.id,
-                    content: response.data.content
-                });
-                setSubmitted(true);
-                console.log(response.data);
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    };
 
     return (
         <div className="mt-3 p-3 w-full flex">
@@ -42,9 +11,9 @@ const CommentsForm = () => {
                      alt=""/>
             </div>
             <form>
-                <textarea value={comment.content} onChange={handleInputChange} name="content" rows="1" className="border p-2 rounded w-full"
+                <textarea name="content" rows="1" className="border p-2 rounded w-full"
                           placeholder="Répondre à..."/>
-                <button onClick={saveComment} className="w-14 h-14 p-3 w-full flex justify-end" type="button">
+                <button className="w-14 h-14 p-3 w-full flex justify-end" type="button">
                     <ArrowCircleRightIcon/>
                 </button>
             </form>

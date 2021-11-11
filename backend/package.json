@@ -2,10 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Backend for Groupomania chat web app",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
@@ -21,10 +21,11 @@
     "multer": "^1.4.2",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.2",
-    "nodemon": "^2.0.6",
+    "nodemon": "^2.0.15",
     "sanitize-middleware": "^2.0.14",
     "secure-password-validator": "^1.0.2",
     "sequelize": "^6.9.0",
+    "sequelize-cli": "^6.3.0",
     "toobusy-js": "^0.5.1",
     "validator": "^13.1.1"
   }

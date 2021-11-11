@@ -1,6 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Check, FileUpload} from "@mui/icons-material";
-import PostDataService from '../../../../../services/PostService'
+import {Formik, Form, Field, ErrorMessage} from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
 const useForceUpdate = () => useState()[1];
 
@@ -22,10 +24,6 @@ const PostForm = () => {
         }
     }
 
-    // function onSubmit(e) {
-    //     e.preventDefault();
-    //     const data = new FormData(fileInput.current.files);
-    // }
 
     function fileNames() {
         const {current} = fileInput;
@@ -40,37 +38,24 @@ const PostForm = () => {
         return null;
     }
 
-    const initialPostState = {
-        id: null,
+    const validationSchema =
+        Yup.object().shape({
+            content: Yup.string().required()
+        })
+
+
+    const initialValues = {
         content: ""
-    };
-    const [post, setPost] = useState(initialPostState);
-    const [submitted, setSubmitted] = useState(false);
+    }
 
-    const handleInputChange = event => {
-        const {name, value} = event.target;
-        setPost({...post, [name]: value});
-    };
+    const [newPost, setNewPost] = useState("");
+    const [posts, setPosts] = useState([]);
 
-    const savePost = () => {
-        const data = {
-            content: post.content
-        };
-
-        PostDataService.create(data)
-            .then(response => {
-                setPost({
-                    id: response.data.id,
-                    content: response.data.content
-                });
-                setSubmitted(true);
-                console.log(response.data);
-            })
-            .catch(e => {
-                console.log(e);
+    const onSubmit = (data) => {
+            axios.post("http://localhost:8080/posts", data).then((response) => {
+                setPosts(response.data);
             });
-    };
-
+    }
 
     return (
         <div className="bg-groupomania_dark flex justify-center">
@@ -81,33 +66,40 @@ const PostForm = () => {
                              src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
                              alt=""/>
                     </div>
-                    <form className="flex flex-grow border border-gray-300 ml-4 mr-2 rounded-md">
-                        <textarea
-                            className="bg-gray-300 p-2 px-3 text-sm block w-full rounded-md placeholder-gray-800 text-gray-800"
-                            placeholder="Qu'avez vous en tête?" value={post.content} onChange={handleInputChange}
-                            name="content"/>
-                        <input className="hidden"
-                               id="file"
-                               type="file"
-                               ref={fileInput}
-                            // The onChange should trigger updates whenever
-                            // the value changes?
-                            // Try to select a file, then try selecting another one.
-                               onChange={forceUpdate}
-                               multiple
-                        />
-                        <div className="flex flex-col items-stretch text-gray-100">
-                            <label className="p-2" htmlFor="file">
-                                <FileUpload tabIndex="0" role="button" aria-controls="filename">
-                                    Upload file(s):{" "}
-                                </FileUpload>
-                            </label>
-                            <button onClick={savePost} className="p-2" type="button">
-                                <Check></Check>
-                            </button>
-                        </div>
-                        {fileNames()}
-                    </form>
+                    <Formik
+                        initialValues={initialValues}
+                        onSubmit={onSubmit}
+                        validationSchema={validationSchema}
+                    >
+                        <Form className="flex flex-grow border border-gray-300 ml-4 mr-2 rounded-md">
+                            <ErrorMessage name="content" component="span"/>
+                            <Field
+                                name="content"
+                                placeholder="Qu'avez vous en tête?"
+                                className="bg-gray-300 p-2 px-3 text-sm block w-full rounded-md placeholder-gray-800 text-gray-800"/>
+                            <input className="hidden"
+                                   id="file"
+                                   type="file"
+                                   ref={fileInput}
+                                // The onChange should trigger updates whenever
+                                // the value changes?
+                                // Try to select a file, then try selecting another one.
+                                   onChange={forceUpdate}
+                                   multiple
+                            />
+                            <div className="flex flex-col items-stretch text-gray-100">
+                                <label className="p-2" htmlFor="file">
+                                    <FileUpload tabIndex="0" role="button" aria-controls="filename">
+                                        Upload file(s):{" "}
+                                    </FileUpload>
+                                </label>
+                                <button className="p-2" type="submit">
+                                    <Check></Check>
+                                </button>
+                            </div>
+                            {fileNames()}
+                        </Form>
+                    </Formik>
                 </div>
             </div>
         </div>
