@@ -2,6 +2,8 @@ const { Posts } = require("../models");
 
 exports.createPost = async (req, res) => {
     const post = req.body;
+    const username = req.user.username;
+    post.username = username;
     await Posts.create(post);
     res.json(post);
 }

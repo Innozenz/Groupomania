@@ -1,14 +1,14 @@
 import React from 'react';
 import BoardHeader from "../../partials/BoardHeader";
-import Post from "./feed/posts/Post";
+import Posts from "./feed/posts/Posts";
 import Footer from "../../partials/Footer";
 
 const Home = () => {
     return (
         <div>
             <BoardHeader/>
-            <Post/>
-            <Footer/>
+            <Posts/>
+            {/*<Footer/>*/}
         </div>
     );
 };

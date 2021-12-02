@@ -2,9 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const db = require("./models");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
 
 const app = express();
 app.use(cors());
+app.use(cookieParser());
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
@@ -18,10 +21,12 @@ db.sequelize.sync({ force: true }).then(() => {
 
 // Routers
 
-const postRouter = require("./routes/Posts");
-const commentsRouter = require("./routes/Comments");
+const postRouter = require("./routes/Routes.Posts");
+const commentsRouter = require("./routes/Routes.Comments");
+const usersRouter = require("./routes/Routes.Users");
 app.use("/posts", postRouter);
 app.use("/comments", commentsRouter);
+app.use("/auth", usersRouter);
 
 
 // set port, listen for requests
