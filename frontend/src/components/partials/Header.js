@@ -1,9 +1,18 @@
-import React from "react";
+import React, {useContext, useState} from "react";
 import Icon from "../../images/icon-left-font-monochrome-black.png";
 import {LogoutIcon, UserIcon} from '@heroicons/react/solid';
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
+import {AuthContext} from "../../helpers/AuthContext";
 
 function Header() {
+    const {authState, setAuthState} = useContext(AuthContext);
+    let history = useHistory();
+
+    const logout = () => {
+        localStorage.removeItem("accessToken");
+        setAuthState({username: "", id: 0, status: false});
+        history.push(`/register`);
+    }
 
     return (
         <div>
@@ -21,10 +30,10 @@ function Header() {
                             </button>
                         </button>
                     </Link>
-                        <Link to="/profile">
+                        <Link to="/register">
                             <button className="rounded-md flex ml-4 border border-black items-center">
                                 <LogoutIcon className="w-6 h-6 text-black m-1"/>
-                                <button className="block flex w-50 py-2 px-2 text-sm">
+                                <button onClick={logout} className="block flex w-50 py-2 px-2 text-sm">
                                     Déconnexion
                                 </button>
                             </button>

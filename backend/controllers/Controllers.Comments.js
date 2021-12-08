@@ -13,3 +13,13 @@ exports.getComments = async (req, res) => {
     const comments = await Comments.findAll({where: {PostId: postId}});
     res.json(comments);
 }
+
+exports.deleteComment = async (req, res) => {
+    const commentId = req.params.commentId;
+    await Comments.destroy({where: {
+        id: commentId,
+        },
+    });
+
+    res.json("Deleted successfully");
+}

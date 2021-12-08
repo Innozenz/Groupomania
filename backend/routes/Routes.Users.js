@@ -7,6 +7,6 @@ router.post("/", usersCtrl.createUser);
 
 router.post("/login", usersCtrl.login);
 
-router.get("/auth", validateToken, usersCtrl.authCheck);
+router.get("/authCheck", validateToken, usersCtrl.authCheck);
 
 module.exports = router;

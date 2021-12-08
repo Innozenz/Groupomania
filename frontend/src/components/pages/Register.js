@@ -25,6 +25,8 @@ const Register = () => {
     const onSubmit = (data) => {
         axios.post("http://localhost:8080/auth", data).then(() => {
             console.log(data);
+            alert("Registration completed, you can now log in");
+            history.push(`/login`);
         }).catch((e) => {
             console.log(e)
         });
@@ -40,7 +42,7 @@ const Register = () => {
                 >
                     <Form className="bg-groupomania_dark-brightest shadow-lg rounded px-12 pt-6 pb-8 mb-4">
                         <div className="text-2xl flex justify-center border-b-2 py-2 mb-4">
-                            Groupomania Login
+                            Groupomania Register
                         </div>
                         <div className="mb-4">
                             <label

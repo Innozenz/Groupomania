@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const db = require("./models");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const {validateToken} = require("./middleware/auth");
 
 
 const app = express();

@@ -1,20 +1,21 @@
 const jwt = require('jsonwebtoken');
-const {verify} = require("jsonwebtoken");
 require('dotenv').config();
 
 const validateToken = (req, res, next) => {
-    const accessToken = req.header("accessToken");
-
-    if (!accessToken) {
-        return res.json({error: "User not logged in!"});
-    }
+    // const accessToken = req.header.authorization("accessToken");
 
     try {
-        const validToken = verify(accessToken, "importantsecret");
-        req.user = validToken;
+        const accessToken = req.headers.authorization.split(' ')[1];
+        console.log(accessToken);
+        const decodedToken = jwt.verify(accessToken, "importantsecret");
+        const userId = decodedToken.userId;
 
-        if (validToken) {
-            return next();
+        req.user = decodedToken;
+
+        if (req.body.userId && req.body.userId !== userId) {
+            throw 'Invalid user ID';
+        } else {
+            next();
         }
     } catch (err) {
         return res.json({error: err});

@@ -11,7 +11,7 @@ const Login = () => {
     let history = useHistory();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    // const {setAuthState} = useContext(AuthContext);
+    const {setAuthState} = useContext(AuthContext);
 
     useEffect(() => {
         if (localStorage.getItem("accessToken")) {
@@ -21,25 +21,17 @@ const Login = () => {
 
     const login = () => {
         const data = {username: username, password: password};
-        instance.post("auth/login", data).then((response) => {
-            localStorage.setItem("accessToken", response.data);
-            // setAuthState(true);
+        instance.post("auth/login", data, {headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken")
+            }}).then((response) => {
+            console.log(response.data);
+            localStorage.setItem("accessToken", response.data.token);
+            setAuthState({username: response.data.username, UserId: response.data.userId, status: true});
             history.push(`/`);
         }).catch((error) => {
             console.log(error);
         })
     }
-
-    // axios.interceptors.response.use((response) => {
-    //     return response;
-    // }, async (error) => {
-    //     const originalRequest = error.config;
-    //     if (error.config.url !== "/refreshToken" && error.response.status === 401 && !originalRequest._retry !== true) {
-    //         axios.defaults.headers.common["authorization"] = `Bearer ${refreshToken}`;
-    //         console.log("refresh token");
-    //         await axios.post("http://localhost:8080//refreshToken")
-    //     }
-    // })
 
     return (
         <div className="bg-groupomania_dark-brighter flex items-center justify-center min-h-screen">

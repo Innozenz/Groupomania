@@ -1,15 +1,14 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import {ThumbUpIcon} from "@heroicons/react/outline";
-import {ArrowCircleRightIcon, ChatAltIcon} from "@heroicons/react/solid";
-import CommentsForm from "../comments/CommentsForm";
+import {ChatAltIcon} from "@heroicons/react/solid";
 import moment from 'moment';
 import 'moment/locale/fr';
 import axios from "axios";
-import {useHistory, useParams} from "react-router-dom";
-import PostForm from "./PostForm";
-import {ErrorMessage, Field, Form, Formik} from "formik";
+import {useHistory} from "react-router-dom";
+import {Form, Formik} from "formik";
 import {Check, FileUpload} from "@mui/icons-material";
 import * as Yup from "yup";
+import {AuthContext} from "../../../../../helpers/AuthContext";
 
 const useForceUpdate = () => useState()[1];
 
@@ -63,22 +62,24 @@ const PostMain = () => {
 
     const addPost = () => {
         axios.post("http://localhost:8080/posts", {
-            content: newPost
-        },
-            {headers:
-                    {accessToken:
-                            localStorage.getItem("accessToken")
-                    }
-            }
-            ).then((response) => {
+                content: newPost
+            },
+            {headers: {
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                }}
+        ).then((response) => {
             if (response.data.error) {
                 alert("You have to be logged in to post a post");
+                localStorage.removeItem("accessToken");
+                history.push(`/login`);
             } else {
-            console.log(listOfPosts);
-            axios.get("http://localhost:8080/posts").then((response) => {
-                setListOfPosts(response.data);
-                console.log(response.data);
-            })
+                console.log(listOfPosts);
+                axios.get("http://localhost:8080/posts", {headers: {
+                        Authorization: "Bearer " + localStorage.getItem("accessToken")
+                    }}).then((response) => {
+                    setListOfPosts(response.data);
+                    console.log(response.data);
+                })
             }
         });
     }
@@ -88,25 +89,23 @@ const PostMain = () => {
         history.push(`/post/${postId}`);
     }
 
+    const {authState} = useContext(AuthContext);
 
     useEffect(() => {
         if (localStorage.getItem("accessToken")) {
-            axios.get("http://localhost:8080/posts").then((response) => {
+            axios.get("http://localhost:8080/posts", {headers: {
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                }}).then((response) => {
                 setListOfPosts(response.data);
                 console.log(response.data);
+                console.log(authState);
             })
         } else {
-            history.push(`/register`);
+            alert("You have to be logged in to access Groupomania");
+            history.push(`/login`);
         }
 
-    }, [])
-
-    // useEffect(() => {
-    //     axios.get(`http://localhost:8080/comments/`).then((response) => {
-    //         setComments(response.data);
-    //         console.log(response.data)
-    //     })
-    // }, [])
+    }, []);
 
     moment.locale("fr");
 

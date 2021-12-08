@@ -1,23 +1,28 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import axios from "axios";
 import moment from "moment";
 import {ThumbUpIcon} from "@heroicons/react/outline";
 import {ArrowCircleRightIcon, ChatAltIcon} from "@heroicons/react/solid";
+import {DeleteForever} from "@mui/icons-material";
+import {AuthContext} from "../../../../../helpers/AuthContext";
 
 const Post = () => {
     let history = useHistory();
     let {id} = useParams();
     const [postObject, setPostObject] = useState({});
+    const {authState} = useContext(AuthContext);
 
 
     useEffect(() => {
         if (localStorage.getItem("accessToken")) {
-            axios.get(`http://localhost:8080/posts/byId/${id}`).then((response) => {
+            axios.get(`http://localhost:8080/posts/byId/${id}`,             {headers: {
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                }}).then((response) => {
                 setPostObject(response.data);
             })
         } else {
-            history.push(`/`);
+            history.push(`/login`);
         }
 
     }, []);
@@ -37,28 +42,48 @@ const Post = () => {
         axios.post(`http://localhost:8080/comments/`, {
             commentBody: newComment,
             PostId: postId},
-            {headers:
-                    {accessToken:
-                            localStorage.getItem("accessToken")
-                    }
-            }
+            {headers: {
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                }}
             ).then((response) => {
             if (response.data.error) {
                 alert("You have to be logged in to post a comment");
+                localStorage.removeItem("accessToken");
+                history.push(`/login`);
             } else {
-            const commentToAdd = {commentBody: newComment, PostId: postId, username: response.data.username}
-            setComments([...comments, commentToAdd]);
+                axios.get(`http://localhost:8080/comments/${id}`,{headers: {
+                        Authorization: "Bearer " + localStorage.getItem("accessToken")
+                    }}).then((response) => {
+                    setComments(response.data);
+                    console.log(response.data);
+                })
+            // const commentToAdd = {commentBody: newComment, id: response.data.id, PostId: postId, username: response.data.username}
+            // setComments([...comments, commentToAdd]);
             setNewComment("");
             }
         })
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/comments/${id}`).then((response) => {
+        axios.get(`http://localhost:8080/comments/${id}`,{headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken")
+            }}).then((response) => {
             setComments(response.data);
             console.log(response.data);
         })
     }, [])
+
+    const deleteComment = (id) => {
+
+        axios.delete(`http://localhost:8080/comments/${id}`,             {headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken")
+            }})
+            .then(() => {
+                setComments(comments.filter((val) => {
+                    return val.id !== id;
+                }))
+            });
+    }
 
     return (
         <div
@@ -113,7 +138,7 @@ const Post = () => {
                                 <div className="flex flex-col-reverse">
                                 {comments.map((comment) => {
                                     return <div className="space-y-4 mb-4" key={comment.id}>
-                                        <div className="flex">
+                                        <div className="flex items-center">
                                             <div className="flex-shrink-0 mr-3">
                                                 <img className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
                                                      src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
@@ -123,9 +148,10 @@ const Post = () => {
                                                 className="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
                                                 <strong>{comment.username}</strong>
                                                 <span
-                                                    className="text-xs text-gray-400"> {moment(comment.createdAt).fromNow()}</span>
+                                                    className="text-xs text-gray-400">  {moment(comment.createdAt).fromNow()}</span>
                                                 <p>{comment.commentBody}</p>
                                             </div>
+                                            {authState.username === comment.username && <DeleteForever className="ml-2" onClick={() => {deleteComment(comment.id)}} />}
                                         </div>
                                     </div>
                                 })}
