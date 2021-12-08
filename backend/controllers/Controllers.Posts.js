@@ -1,4 +1,4 @@
-const { Posts } = require("../models");
+const { Likes, Posts } = require("../models");
 
 exports.createPost = async (req, res) => {
     const post = req.body;
@@ -9,7 +9,7 @@ exports.createPost = async (req, res) => {
 }
 
 exports.getAllPosts = async (req, res) => {
-    const listOfPosts = await Posts.findAll();
+    const listOfPosts = await Posts.findAll({include: [Likes]});
     res.json(listOfPosts);
 }
 

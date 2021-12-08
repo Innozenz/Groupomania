@@ -25,9 +25,11 @@ db.sequelize.sync({ force: true }).then(() => {
 const postRouter = require("./routes/Routes.Posts");
 const commentsRouter = require("./routes/Routes.Comments");
 const usersRouter = require("./routes/Routes.Users");
+const likesRouter = require("./routes/Routes.Likes");
 app.use("/posts", postRouter);
 app.use("/comments", commentsRouter);
 app.use("/auth", usersRouter);
+app.use("/likes", likesRouter);
 
 
 // set port, listen for requests

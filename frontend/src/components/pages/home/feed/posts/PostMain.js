@@ -107,6 +107,26 @@ const PostMain = () => {
 
     }, []);
 
+    const likeAPost = (postId) => {
+        axios.post("http://localhost:8080/likes", {PostId: postId}, {headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken")
+            }}).then((response) => {
+            setListOfPosts(listOfPosts.map((post) => {
+                if (post.id === postId) {
+                    if (response.data.liked === true) {
+                        return {...post, Likes: [...post.Likes, 0]};
+                    } else {
+                        const likeArray = post.Likes;
+                        likeArray.pop();
+                        return {...post, Likes: likeArray}
+                    }
+                } else {
+                    return post;
+                }
+            }))
+        })
+    }
+
     moment.locale("fr");
 
     return (
@@ -172,9 +192,10 @@ const PostMain = () => {
                         </div>
                         <div
                             className="relative bottom-1 flex flex-wrap justify-around items-center rounded-b-2xl bg-white shadow-md text-gray-800 border-t">
-                            <div className="w-1/2 inputIcon rounded-none rounded-bl-2xl">
+                            <div className="w-1/2 inputIcon rounded-none rounded-bl-2xl" onClick={() => likeAPost(post.id)}>
                                 <ThumbUpIcon className="h-4"/>
                                 <p className="text-xs sm:text-base">Like</p>
+                                <label>{post.Likes.length}</label>
                             </div>
 
                             <div className="w-1/2 inputIcon rounded-none rounded-br-2xl"
