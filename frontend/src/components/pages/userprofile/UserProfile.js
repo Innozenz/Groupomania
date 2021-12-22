@@ -1,8 +1,26 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Link} from "react-router-dom";
 import {PencilIcon} from "@heroicons/react/solid";
+import {useParams} from "react-router-dom";
+import axios from "axios";
+import {AuthContext} from "../../../helpers/AuthContext";
 
 const UserProfile = () => {
+    let {id} = useParams();
+    const [user, setUser] = useState("");
+    const {authState} = useContext(AuthContext);
+
+    useEffect(() => {
+        axios.get(`http://localhost:8080/auth/userinfo/${id}`, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: "Bearer " + localStorage.getItem("accessToken")
+            }
+        }).then((response) => {
+            setUser(response.data);
+        })
+    }, []);
+
     return (
         <div className="container mx-auto my-5 p-5 bg">
             <div className="md:flex no-wrap md:-mx-2 flex-col items-center">
@@ -26,37 +44,40 @@ const UserProfile = () => {
                                                               stroke-width="2"
                                                               d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                                     </svg>
-                                                                                                <span
-                                                                                                    className="ml-2 tracking-wide text-groupomania_text-darker">A Propos</span>
+                                                    <span
+                                                        className="ml-2 tracking-wide text-groupomania_text-darker">A Propos
+                                                    </span>
                                                 </span>
-                                        <Link to="/edit">
-                                            <PencilIcon className="w-6 h-6"/>
-                                        </Link>
+                                        {authState.username === user.username &&
+                                            <Link to="/edit">
+                                                <PencilIcon className="w-6 h-6"/>
+                                            </Link>
+                                        }
                                     </div>
                                     <div className="text-groupomania_text">
                                         <div className="grid md:grid-cols-1">
                                             <div className="grid grid-cols-2">
+                                                <div className="px-4 py-2 font-semibold">Username</div>
+                                                <div className="px-4 py-2">{user.username}</div>
+                                            </div>
+                                            <div className="grid grid-cols-2">
                                                 <div className="px-4 py-2 font-semibold">Prénom</div>
-                                                <div className="px-4 py-2">Test</div>
+                                                <div className="px-4 py-2">{user.firstName}</div>
                                             </div>
                                             <div className="grid grid-cols-2">
                                                 <div className="px-4 py-2 font-semibold">Nom</div>
-                                                <div className="px-4 py-2">Test</div>
+                                                <div className="px-4 py-2">{user.lastName}</div>
                                             </div>
                                             <div className="grid grid-cols-2">
                                                 <div className="px-4 py-2 font-semibold">Email.</div>
                                                 <div className="px-4 py-2">
                                                     <a className="text-blue-800"
-                                                       href="mailto:jane@example.com">test@example.com</a>
+                                                       href="mailto:jane@example.com">{user.email}</a>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2">
-                                                <div className="px-4 py-2 font-semibold">Date de naissance</div>
-                                                <div className="px-4 py-2">Feb 27, 1994</div>
-                                            </div>
-                                            <div className="grid grid-cols-2">
                                                 <div className="px-4 py-2 font-semibold">Poste</div>
-                                                <div className="px-4 py-2">Test</div>
+                                                <div className="px-4 py-2">{user.job}</div>
                                             </div>
                                         </div>
                                     </div>

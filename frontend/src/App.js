@@ -11,7 +11,7 @@ import Logs from "./components/utils/Logs";
 
 function App() {
     let history = useHistory();
-    const [authState, setAuthState] = useState({username: "", userId: 0, status: false});
+    const [authState, setAuthState] = useState({email: "", username: "", firstName: "", lastName: "", job: "", userId: 0, status: false, isAdmin: false});
 
     useEffect(() => {
         axios.get("http://localhost:8080/auth/authCheck", {headers: {
@@ -24,9 +24,14 @@ function App() {
                 history.push(`/login`);
             } else {
                 setAuthState({
+                    email: response.data.email,
                     username: response.data.username,
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    job: response.data.job,
                     userId: response.data.userId,
-                    status: true
+                    status: true,
+                    isAdmin: response.data.isAdmin
                 });
             }
         })

@@ -1,14 +1,14 @@
 const {Users} = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const {validateToken} = require("../middleware/auth");
 
 require('dotenv').config();
 
 exports.createUser = async (req, res) => {
-    const {username, password} = req.body;
+    const {email, username, password} = req.body;
     bcrypt.hash(password, 10).then((hash) => {
         Users.create({
+            email: email,
             username: username,
             password: hash,
         }).then(() => {
@@ -22,9 +22,9 @@ exports.createUser = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-    const {username, password} = req.body;
+    const {email, password} = req.body;
 
-    const user = await Users.findOne({where: {username: username}});
+    const user = await Users.findOne({where: {email: email}});
 
     if (!user) res.status(400).json({error: "User Doesn't Exist"});
 
@@ -37,9 +37,14 @@ exports.login = async (req, res) => {
         } else {
             res.status(200).json({
                 userId: user.id,
-                username: username,
+                email: email,
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                job: user.job,
+                isAdmin: user.isAdmin,
                 token: jwt.sign(
-                    {userId: user.id, username: username},
+                    {userId: user.id, email: email, username: user.username, firstName: user.firstName, lastName: user.lastName, job: user.job, isAdmin: user.isAdmin},
                     "importantsecret",
                     {expiresIn: "30m"})
             })
@@ -49,4 +54,28 @@ exports.login = async (req, res) => {
 
 exports.authCheck = (req, res) => {
     res.json(req.user);
+}
+
+exports.userInfo = async (req, res) => {
+    const id = req.params.id;
+
+    const info = await Users.findByPk(id, {attributes: {exclude: ["password"]}});
+
+    res.json(info);
+}
+
+exports.editUser = async (req, res) => {
+    const {newFirstName, newLastName, newJob} = req.body;
+    if (newFirstName) {
+        await Users.update({firstName: newFirstName}, {where: {username: req.user.username}});
+    }
+    if (newLastName) {
+        Users.update({lastName: newLastName}, {where: {username: req.user.username}});
+    }
+
+    if (newJob) {
+        Users.update({job: newJob}, {where: {username: req.user.username}});
+    }
+    // await Users.update({firstName: newFirstName, lastName: newLastName, job: newJob}, {where: {username: req.user.username}});
+    res.json("success");
 }

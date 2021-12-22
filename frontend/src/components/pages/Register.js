@@ -13,6 +13,7 @@ const Register = () => {
     }, []);
 
     const initialValues = {
+        email: "",
         username: "",
         password: ""
     }
@@ -43,6 +44,23 @@ const Register = () => {
                     <Form className="bg-groupomania_dark-brightest shadow-lg rounded px-12 pt-6 pb-8 mb-4">
                         <div className="text-2xl flex justify-center border-b-2 py-2 mb-4">
                             Groupomania Register
+                        </div>
+                        <div className="mb-4">
+                            <label
+                                className="block text-sm font-normal mb-2"
+                                htmlFor="email"
+                            >
+                                Email
+                            </label>
+                            <Field
+                                className="shadow appearance-none border rounded w-full py-2 px-3 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                                v-model="form.email"
+                                type="text"
+                                placeholder="Email"
+                                name="email"
+                                required
+                                autoComplete="current-email"
+                            />
                         </div>
                         <div className="mb-4">
                             <label

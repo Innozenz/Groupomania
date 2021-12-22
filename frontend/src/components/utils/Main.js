@@ -12,7 +12,7 @@ const Main = () => {
     return (
         <Switch> {/* The Switch decides which component to show based on the current URL.*/}
             <Route exact path='/' component={Home}/>
-            <Route exact path='/profile' component={Profile}/>
+            <Route exact path='/profile/:id' component={Profile}/>
             <Route exact path='/edit' component={EditProfile}/>
             <Route exact path='/post/:id' component={Post}/>
         </Switch>

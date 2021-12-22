@@ -10,42 +10,11 @@ import {Check, FileUpload} from "@mui/icons-material";
 import * as Yup from "yup";
 import {AuthContext} from "../../../../../helpers/AuthContext";
 
-const useForceUpdate = () => useState()[1];
 
 const PostMain = () => {
 
     let history = useHistory();
 
-    const fileInput = useRef(null);
-    const forceUpdate = useForceUpdate();
-
-    useEffect(e => {
-        window.addEventListener("keyup", clickFileInput);
-        return () => window.removeEventListener("keyup", clickFileInput);
-    });
-
-    function clickFileInput(e) {
-        if (fileInput.current.nextSibling.contains(document.activeElement)) {
-            // Bind space to trigger clicking of the button when focused
-            if (e.keyCode === 32) {
-                fileInput.current.click();
-            }
-        }
-    }
-
-
-    function fileNames() {
-        const {current} = fileInput;
-
-        if (current && current.files.length > 0) {
-            let messages = [];
-            for (let file of current.files) {
-                messages = messages.concat(<p key={file.name}>{file.name}</p>);
-            }
-            return messages;
-        }
-        return null;
-    }
 
     // const validationSchema =
     //     Yup.object().shape({
@@ -59,14 +28,21 @@ const PostMain = () => {
 
     const [newPost, setNewPost] = useState([]);
     const [listOfPosts, setListOfPosts] = useState([]);
+    const [likedPosts, setLikedPosts] = useState([]);
+    const [fileState, setFileState] = useState("");
 
     const addPost = () => {
-        axios.post("http://localhost:8080/posts", {
-                content: newPost
-            },
-            {headers: {
+        const formData = new FormData();
+        formData.append("image", fileState);
+        formData.append("content", newPost);
+
+        axios.post("http://localhost:8080/posts", formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
                     Authorization: "Bearer " + localStorage.getItem("accessToken")
-                }}
+                }
+            }
         ).then((response) => {
             if (response.data.error) {
                 alert("You have to be logged in to post a post");
@@ -74,10 +50,13 @@ const PostMain = () => {
                 history.push(`/login`);
             } else {
                 console.log(listOfPosts);
-                axios.get("http://localhost:8080/posts", {headers: {
+                console.log(fileState);
+                axios.get("http://localhost:8080/posts", {
+                    headers: {
                         Authorization: "Bearer " + localStorage.getItem("accessToken")
-                    }}).then((response) => {
-                    setListOfPosts(response.data);
+                    }
+                }).then((response) => {
+                    setListOfPosts(response.data.listOfPosts);
                     console.log(response.data);
                 })
             }
@@ -92,25 +71,32 @@ const PostMain = () => {
     const {authState} = useContext(AuthContext);
 
     useEffect(() => {
-        if (localStorage.getItem("accessToken")) {
-            axios.get("http://localhost:8080/posts", {headers: {
+        if (!localStorage.getItem("accessToken")) {
+            alert("You have to be logged in to access Groupomania");
+            history.push(`/login`);
+        } else {
+            axios.get("http://localhost:8080/posts", {
+                headers: {
                     Authorization: "Bearer " + localStorage.getItem("accessToken")
-                }}).then((response) => {
-                setListOfPosts(response.data);
+                }
+            }).then((response) => {
+                setListOfPosts(response.data.listOfPosts);
+                setLikedPosts(response.data.likedPosts.map((like) => {
+                    return like.PostId
+                }));
                 console.log(response.data);
                 console.log(authState);
             })
-        } else {
-            alert("You have to be logged in to access Groupomania");
-            history.push(`/login`);
         }
 
     }, []);
 
     const likeAPost = (postId) => {
-        axios.post("http://localhost:8080/likes", {PostId: postId}, {headers: {
+        axios.post("http://localhost:8080/likes", {PostId: postId}, {
+            headers: {
                 Authorization: "Bearer " + localStorage.getItem("accessToken")
-            }}).then((response) => {
+            }
+        }).then((response) => {
             setListOfPosts(listOfPosts.map((post) => {
                 if (post.id === postId) {
                     if (response.data.liked === true) {
@@ -123,8 +109,15 @@ const PostMain = () => {
                 } else {
                     return post;
                 }
-            }))
-        })
+            }));
+        });
+        if (likedPosts.includes(postId)) {
+            setLikedPosts(likedPosts.filter((id) => {
+                return id !== postId
+            }));
+        } else {
+            setLikedPosts([...likedPosts, postId]);
+        }
     }
 
     moment.locale("fr");
@@ -142,7 +135,7 @@ const PostMain = () => {
                         <Formik
                             initialValues={initialValues}
                         >
-                            <Form className="flex flex-grow border border-gray-300 ml-4 mr-2 rounded-md">
+                            <Form className="flex flex-grow border border-gray-300 ml-4 mr-2 rounded-md" encType="multipart/form-data">
                                 <textarea
                                     required="required"
                                     onChange={(event) => {
@@ -155,12 +148,12 @@ const PostMain = () => {
                                 <input className="hidden"
                                        id="file"
                                        type="file"
-                                       ref={fileInput}
                                     // The onChange should trigger updates whenever
                                     // the value changes?
                                     // Try to select a file, then try selecting another one.
-                                       onChange={forceUpdate}
-                                       multiple
+                                       onChange={event => {
+                                           setFileState(event.target.files[0])
+                                       }}
                                 />
                                 <div className="flex flex-col items-stretch text-gray-100">
                                     <label className="p-2" htmlFor="file">
@@ -172,7 +165,6 @@ const PostMain = () => {
                                         <Check></Check>
                                     </button>
                                 </div>
-                                {fileNames()}
                             </Form>
                         </Formik>
                     </div>
@@ -181,21 +173,25 @@ const PostMain = () => {
             <div
                 className="relative flex justify-center items-center bg-groupomania_dark text-groupomania_text flex-col-reverse">
                 {listOfPosts.map((post, key) => {
-                    // onClick={() => {history.push(`/post/${post.id}`)}}
                     return <div className={"w-full lg:w-1/2 px-6 py-4 mb-24"} key={post.id} index={post.id}>
                         <div className="border border-black bg-groupomania_dark-brighter rounded-md p-4">
                             <h5 className="text-gray-100 text-sm mb-3 ml-4">Publié par {" "}
                                 {post.username}, {moment(post.createdAt).fromNow()}</h5>
                             <div className="leading-6">
-                                <p>{post.content}</p>
+                                <p className="mb-6">{post.content}</p>
+                            </div>
+                            <div className="flex leading-6 justify-center">
+                                {post.image ?  (<img className="h-2/4 w-2/4" src={`http://localhost:8080/${post.image}`}/>) : (<div></div>) }
                             </div>
                         </div>
                         <div
                             className="relative bottom-1 flex flex-wrap justify-around items-center rounded-b-2xl bg-white shadow-md text-gray-800 border-t">
-                            <div className="w-1/2 inputIcon rounded-none rounded-bl-2xl" onClick={() => likeAPost(post.id)}>
-                                <ThumbUpIcon className="h-4"/>
-                                <p className="text-xs sm:text-base">Like</p>
-                                <label>{post.Likes.length}</label>
+                            <div className="w-1/2 inputIcon rounded-none rounded-bl-2xl"
+                                 onClick={() => likeAPost(post.id)}>
+                                <ThumbUpIcon className={likedPosts.includes(post.id) ? "fill-blue-500 h-4" : "h-4"}/>
+                                <p className={likedPosts.includes(post.id) ? "text-xs sm:text-base text-blue-600" : "text-xs sm:text-base"}>Like</p>
+                                <label
+                                    className={likedPosts.includes(post.id) ? "text-xs sm:text-base text-blue-600" : "text-xs sm:text-base"}>{post.Likes.length}</label>
                             </div>
 
                             <div className="w-1/2 inputIcon rounded-none rounded-br-2xl"

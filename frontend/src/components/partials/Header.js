@@ -14,6 +14,10 @@ function Header() {
         history.push(`/register`);
     }
 
+    const pushToProfile = () => {
+        history.push(`/profile/${authState.UserId}`);
+    }
+
     return (
         <div>
             <header className="w-full bg-groupomania_dark p-2">
@@ -22,14 +26,14 @@ function Header() {
                         <img className="w-auto h-11" src={Icon} alt=""/>
                     </Link>
                     <div className="flex flex-row">
-                    <Link to="/profile">
-                        <button className="rounded-md flex ml-4 border border-black items-center">
-                            <UserIcon className="w-6 h-6 text-black m-1"/>
+                        <button className="rounded-md flex ml-4 items-center" onClick={pushToProfile}>
+                            <img className="rounded-full w-6 h-6 sm:w-6 sm:h-6"
+                                 src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
+                                 alt=""/>
                             <button className="block flex w-50 py-2 px-2 text-sm">
-                                Mon profil
+                                {authState.username}
                             </button>
                         </button>
-                    </Link>
                         <Link to="/register">
                             <button className="rounded-md flex ml-4 border border-black items-center">
                                 <LogoutIcon className="w-6 h-6 text-black m-1"/>

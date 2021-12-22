@@ -10,6 +10,7 @@ const Login = () => {
 
     let history = useHistory();
     const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const {setAuthState} = useContext(AuthContext);
 
@@ -20,13 +21,14 @@ const Login = () => {
     }, []);
 
     const login = () => {
-        const data = {username: username, password: password};
+        const data = {email: email, password: password};
         instance.post("auth/login", data, {headers: {
                 Authorization: "Bearer " + localStorage.getItem("accessToken")
             }}).then((response) => {
             console.log(response.data);
+            console.log(data)
             localStorage.setItem("accessToken", response.data.token);
-            setAuthState({username: response.data.username, UserId: response.data.userId, status: true});
+            setAuthState({email: response.data.email, username: response.data.username, UserId: response.data.userId, status: true, isAdmin: response.data.isAdmin});
             history.push(`/`);
         }).catch((error) => {
             console.log(error);
@@ -43,21 +45,21 @@ const Login = () => {
                     <div className="mb-4">
                         <label
                             className="block text-sm font-normal mb-2"
-                            htmlFor="username"
+                            htmlFor="email"
                         >
-                            Username
+                            Email
                         </label>
                         <input
                             onChange={(event) => {
-                                setUsername(event.target.value)
+                                setEmail(event.target.value)
                             }}
                             className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-                            name="username"
-                            v-model="form.username"
+                            name="email"
+                            v-model="form.email"
                             type="text"
                             required
                             autoFocus
-                            placeholder="Username"
+                            placeholder="Email"
                         />
                     </div>
                     <div className="mb-6">

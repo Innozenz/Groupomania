@@ -4,6 +4,10 @@ module.exports = {
     theme: {
         extend: {
             colors: {
+                like:  {
+                    DEFAULT: '#ffffff',
+                    blue: '#3B82F6',
+                } ,
                 groupomania_dark: {
                     DEFAULT: "#FFFFFF",
                     brighter: "#091f43",

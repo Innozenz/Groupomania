@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync().then(() => {
     console.log("Drop and re-sync db.");
 });
 
@@ -30,6 +30,8 @@ app.use("/posts", postRouter);
 app.use("/comments", commentsRouter);
 app.use("/auth", usersRouter);
 app.use("/likes", likesRouter);
+
+app.use("/images", express.static("./images"));
 
 
 // set port, listen for requests
