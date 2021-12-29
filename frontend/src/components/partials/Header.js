@@ -1,6 +1,6 @@
-import React, {useContext, useState} from "react";
+import React, {useContext} from "react";
 import Icon from "../../images/icon-left-font-monochrome-black.png";
-import {LogoutIcon, UserIcon} from '@heroicons/react/solid';
+import {LogoutIcon} from '@heroicons/react/solid';
 import {Link, useHistory} from "react-router-dom";
 import {AuthContext} from "../../helpers/AuthContext";
 
@@ -15,7 +15,7 @@ function Header() {
     }
 
     const pushToProfile = () => {
-        history.push(`/profile/${authState.UserId}`);
+        history.push(`/profile/${authState.userId}`);
     }
 
     return (
@@ -28,8 +28,7 @@ function Header() {
                     <div className="flex flex-row">
                         <button className="rounded-md flex ml-4 items-center" onClick={pushToProfile}>
                             <img className="rounded-full w-6 h-6 sm:w-6 sm:h-6"
-                                 src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
-                                 alt=""/>
+                                 src={`http://localhost:8080/${authState.image}`}/>
                             <button className="block flex w-50 py-2 px-2 text-sm">
                                 {authState.username}
                             </button>

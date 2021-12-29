@@ -3,13 +3,13 @@ import {Link, useHistory} from "react-router-dom";
 import axios from "axios";
 import {AuthContext} from "../../helpers/AuthContext";
 
+
 const Login = () => {
     const instance = axios.create({
         baseURL: "http://localhost:8080/",
     });
 
     let history = useHistory();
-    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const {setAuthState} = useContext(AuthContext);
@@ -28,7 +28,7 @@ const Login = () => {
             console.log(response.data);
             console.log(data)
             localStorage.setItem("accessToken", response.data.token);
-            setAuthState({email: response.data.email, username: response.data.username, UserId: response.data.userId, status: true, isAdmin: response.data.isAdmin});
+            setAuthState({email: response.data.email, username: response.data.username, userId: response.data.userId, status: true, isAdmin: response.data.isAdmin, image: response.data.image});
             history.push(`/`);
         }).catch((error) => {
             console.log(error);

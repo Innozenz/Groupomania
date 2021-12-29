@@ -2,9 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import Home from '../pages/home/Home';
-import Login from "../pages/Login";
 import Profile from "../pages/userprofile/Profile";
-import Register from "../pages/Register";
 import EditProfile from "../pages/userprofile/EditProfile";
 import Post from "../pages/home/feed/posts/Post"
 

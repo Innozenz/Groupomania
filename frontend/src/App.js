@@ -4,14 +4,12 @@ import Footer from "./components/partials/Footer";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {AuthContext} from "./helpers/AuthContext";
-import {Route, useHistory} from "react-router-dom";
-import Login from "./components/pages/Login";
-import Register from "./components/pages/Register";
+import {useHistory} from "react-router-dom";
 import Logs from "./components/utils/Logs";
 
 function App() {
     let history = useHistory();
-    const [authState, setAuthState] = useState({email: "", username: "", firstName: "", lastName: "", job: "", userId: 0, status: false, isAdmin: false});
+    const [authState, setAuthState] = useState({email: "", username: "", firstName: "", lastName: "", job: "", userId: 0, status: false, isAdmin: false, image: ""});
 
     useEffect(() => {
         axios.get("http://localhost:8080/auth/authCheck", {headers: {
@@ -31,7 +29,8 @@ function App() {
                     job: response.data.job,
                     userId: response.data.userId,
                     status: true,
-                    isAdmin: response.data.isAdmin
+                    isAdmin: response.data.isAdmin,
+                    image: response.data.image
                 });
             }
         })

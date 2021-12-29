@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {ThumbUpIcon} from "@heroicons/react/outline";
 import {ChatAltIcon} from "@heroicons/react/solid";
 import moment from 'moment';
@@ -30,6 +30,7 @@ const PostMain = () => {
     const [listOfPosts, setListOfPosts] = useState([]);
     const [likedPosts, setLikedPosts] = useState([]);
     const [fileState, setFileState] = useState("");
+    const {authState, setAuthState} = useContext(AuthContext);
 
     const addPost = () => {
         const formData = new FormData();
@@ -68,7 +69,33 @@ const PostMain = () => {
         history.push(`/post/${postId}`);
     }
 
-    const {authState} = useContext(AuthContext);
+
+    useEffect(() => {
+        if (!localStorage.getItem("accessToken")) {
+            alert("You have to be logged in to access Groupomania");
+            history.push(`/login`);
+        } else {
+            axios.get(`http://localhost:8080/auth/userinfo/${authState.userId}`, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                }
+            }).then((response) => {
+                console.log(response.data);
+                setAuthState({
+                    email: response.data.email,
+                    username: response.data.username,
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    job: response.data.job,
+                    userId: response.data.id,
+                    status: true,
+                    isAdmin: response.data.isAdmin,
+                    image: response.data.image
+                })
+            })
+        }
+    }, []);
 
     useEffect(() => {
         if (!localStorage.getItem("accessToken")) {
@@ -129,8 +156,8 @@ const PostMain = () => {
                     <div className="border border-black p-2 rounded-md flex bg-groupomania_dark-brighter">
                         <div className="flex-shrink-0 mr-3">
                             <img className="mt-2 rounded-full w-8 h-8 sm:w-14 sm:h-14"
-                                 src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
-                                 alt=""/>
+                                 src={`http://localhost:8080/${authState.image}`}
+                                 alt="user-image"/>
                         </div>
                         <Formik
                             initialValues={initialValues}

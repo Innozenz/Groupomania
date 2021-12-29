@@ -2,9 +2,8 @@ import React, {useContext, useEffect, useState} from 'react';
 import {useHistory, useParams} from 'react-router-dom';
 import axios from "axios";
 import moment from "moment";
-import {ThumbUpIcon} from "@heroicons/react/outline";
-import {ArrowCircleRightIcon, ChatAltIcon} from "@heroicons/react/solid";
-import {DeleteForever, DeleteSharp, DeleteSweep} from "@mui/icons-material";
+import {ArrowCircleRightIcon} from "@heroicons/react/solid";
+import {DeleteForever, DeleteSharp} from "@mui/icons-material";
 import {AuthContext} from "../../../../../helpers/AuthContext";
 
 const Post = () => {
@@ -29,13 +28,6 @@ const Post = () => {
 
     }, []);
 
-
-    const [DropCommentVisibility, setDropCommentVisibility] = useState("hidden");
-
-
-    function toggleCommentDropDown(postObject) {
-        setDropCommentVisibility({...DropCommentVisibility, [postObject]: !DropCommentVisibility[postObject]});
-    }
 
     const [newComment, setNewComment] = useState("");
     const [comments, setComments] = useState([]);
@@ -146,7 +138,7 @@ const Post = () => {
                         <p className="mb-6">{postObject.content}</p>
                     </div>
                     <div className="leading-6">
-                        {postObject.image ?  (<img src={`http://localhost:8080/${postObject.image}`}/>) : (<div></div>) }
+                        {postObject.image ?  (<img src={`http://localhost:8080/${postObject.image}`} alt="post-image"/>) : (<div></div>) }
                     </div>
                 </div>
                 <div
@@ -167,7 +159,7 @@ const Post = () => {
                         <div className="mt-3 p-3 w-full flex">
                             <div className="flex-shrink-0 mr-3">
                                 <img className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                                     src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
+                                     src={`http://localhost:8080/${authState.image}`}
                                      alt=""/>
                             </div>
                             <form>
@@ -195,7 +187,7 @@ const Post = () => {
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0 mr-3">
                                                 <img className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                                                     src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
+                                                     src={`http://localhost:8080/${authState.image}`}
                                                      alt=""/>
                                             </div>
                                             <div

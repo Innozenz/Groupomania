@@ -4,6 +4,8 @@ import * as Yup from "yup";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import axios from "axios";
 
+
+
 const Register = () => {
     let history = useHistory();
     useEffect(() => {
@@ -19,8 +21,12 @@ const Register = () => {
     }
 
     const validationSchema = Yup.object().shape({
-        username: Yup.string().min(3).max(15).required(),
-        password: Yup.string().min(4).max(20).required()
+        email: Yup.string().email("Invalid email").required("Required"),
+        username: Yup.string().required("Required"),
+        password: Yup.string().required("Please enter your password").matches(
+            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+            "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+        ),
     });
 
     const onSubmit = (data) => {
@@ -38,8 +44,8 @@ const Register = () => {
             <div className="w-full max-w-md">
                 <Formik
                     initialValues={initialValues}
-                    onSubmit={onSubmit}
                     validationSchema={validationSchema}
+                    onSubmit={onSubmit}
                 >
                     <Form className="bg-groupomania_dark-brightest shadow-lg rounded px-12 pt-6 pb-8 mb-4">
                         <div className="text-2xl flex justify-center border-b-2 py-2 mb-4">
@@ -95,6 +101,7 @@ const Register = () => {
                                 required
                                 autoComplete="current-password"
                             />
+                            <ErrorMessage name="password" />
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center mt-3 justify-center">

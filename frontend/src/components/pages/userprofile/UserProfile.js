@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Link} from "react-router-dom";
-import {PencilIcon} from "@heroicons/react/solid";
+import {Link, useHistory} from "react-router-dom";
+import {PencilIcon, XCircleIcon} from "@heroicons/react/solid";
 import {useParams} from "react-router-dom";
 import axios from "axios";
 import {AuthContext} from "../../../helpers/AuthContext";
@@ -8,7 +8,8 @@ import {AuthContext} from "../../../helpers/AuthContext";
 const UserProfile = () => {
     let {id} = useParams();
     const [user, setUser] = useState("");
-    const {authState} = useContext(AuthContext);
+    const {authState, setAuthState} = useContext(AuthContext);
+    let history = useHistory();
 
     useEffect(() => {
         axios.get(`http://localhost:8080/auth/userinfo/${id}`, {
@@ -21,6 +22,23 @@ const UserProfile = () => {
         })
     }, []);
 
+    const deleteAccount = () => {
+        axios.delete(`http://localhost:8080/auth/deleteUser/${id}`, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken")
+            }
+        }).then(r => {
+            if (r.data.error) {
+                alert(r.data.error);
+            } else {
+                alert("Compte supprimé avec succès !");
+                localStorage.removeItem("accessToken");
+                setAuthState({username: "", id: 0, status: false});
+                history.push(`/register`);
+            }
+        });
+    }
+
     return (
         <div className="container mx-auto my-5 p-5 bg">
             <div className="md:flex no-wrap md:-mx-2 flex-col items-center">
@@ -29,7 +47,7 @@ const UserProfile = () => {
                     <div className="p-3 border-t-4 border-groupomania_border m-2">
                         <div className="w-full image overflow-hidden flex">
                             <img className="h-auto md:w-1/3"
-                                 src="https://lavinephotography.com.au/wp-content/uploads/2017/01/PROFILE-Photography-112.jpg"
+                                 src={`http://localhost:8080/${user.image}`}
                                  alt=""/>
                             <div
                                 className="w-full mx-2 h-auto bg-groupomania_dark-brighter border border-black rounded-md">
@@ -48,11 +66,13 @@ const UserProfile = () => {
                                                         className="ml-2 tracking-wide text-groupomania_text-darker">A Propos
                                                     </span>
                                                 </span>
-                                        {authState.username === user.username &&
+                                        {authState.username === user.username ? (
                                             <Link to="/edit">
                                                 <PencilIcon className="w-6 h-6"/>
                                             </Link>
-                                        }
+                                        ) : authState.isAdmin && <Link to="/edit">
+                                            <PencilIcon className="w-6 h-6"/>
+                                        </Link>}
                                     </div>
                                     <div className="text-groupomania_text">
                                         <div className="grid md:grid-cols-1">
@@ -87,6 +107,17 @@ const UserProfile = () => {
                     </div>
                 </div>
             </div>
+            {authState.username === user.username ? (
+                <div className="flex justify-center">
+                    <p className="text-red-800 mr-2">Delete your account</p>
+                    <XCircleIcon onClick={deleteAccount} className="w-6 h-6" />
+                </div>
+            ) : authState.isAdmin &&
+                <div className="flex justify-center">
+                    <p className="text-red-800 mr-2">Delete your account</p>
+                    <XCircleIcon onClick={deleteAccount} className="w-6 h-6" />
+                </div>}
+
         </div>
     );
 };

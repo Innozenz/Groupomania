@@ -43,9 +43,10 @@ exports.login = async (req, res) => {
                 lastName: user.lastName,
                 job: user.job,
                 isAdmin: user.isAdmin,
+                image: user.image,
                 token: jwt.sign(
-                    {userId: user.id, email: email, username: user.username, firstName: user.firstName, lastName: user.lastName, job: user.job, isAdmin: user.isAdmin},
-                    "importantsecret",
+                    {userId: user.id, email: email, username: user.username, firstName: user.firstName, lastName: user.lastName, job: user.job, isAdmin: user.isAdmin, image: user.image},
+                    process.env.SECRET_TOKEN,
                     {expiresIn: "30m"})
             })
         }
@@ -59,13 +60,22 @@ exports.authCheck = (req, res) => {
 exports.userInfo = async (req, res) => {
     const id = req.params.id;
 
-    const info = await Users.findByPk(id, {attributes: {exclude: ["password"]}});
+    const info = await Users.findOne({where: {id: id}} );
+
+    res.json(info);
+}
+
+exports.allUserInfo = async (req, res) => {
+
+    const info = await Users.findAll();
 
     res.json(info);
 }
 
 exports.editUser = async (req, res) => {
     const {newFirstName, newLastName, newJob} = req.body;
+
+
     if (newFirstName) {
         await Users.update({firstName: newFirstName}, {where: {username: req.user.username}});
     }
@@ -76,6 +86,20 @@ exports.editUser = async (req, res) => {
     if (newJob) {
         Users.update({job: newJob}, {where: {username: req.user.username}});
     }
-    // await Users.update({firstName: newFirstName, lastName: newLastName, job: newJob}, {where: {username: req.user.username}});
+    if(req.file && req.file.path) {
+        let image = req.file.path
+        if (image) {
+            Users.update({image: image}, {where: {username: req.user.username}});
+        }
+    }
+
+
     res.json("success");
+}
+
+exports.deleteUser = async (req, res) => {
+    const id = req.params.id;
+    Users.destroy({where: {id: id}});
+
+    res.json("Account deleted !");
 }
