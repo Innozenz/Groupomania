@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Link, useHistory} from "react-router-dom";
-import {PencilIcon, XCircleIcon} from "@heroicons/react/solid";
+import {PencilIcon, UserIcon, XCircleIcon} from "@heroicons/react/solid";
 import {useParams} from "react-router-dom";
 import axios from "axios";
 import {AuthContext} from "../../../helpers/AuthContext";
@@ -20,6 +20,32 @@ const UserProfile = () => {
         }).then((response) => {
             setUser(response.data);
         })
+    }, []);
+
+    useEffect(() => {
+        if (!localStorage.getItem("accessToken")) {
+            alert("You have to be logged in to access Groupomania");
+            history.push(`/login`);
+        } else {
+            axios.get(`http://localhost:8080/auth/userinfo/${authState.userId}`, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                }
+            }).then((response) => {
+                setAuthState({
+                    email: response.data.email,
+                    username: response.data.username,
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    job: response.data.job,
+                    userId: response.data.id,
+                    status: true,
+                    isAdmin: response.data.isAdmin,
+                    image: response.data.image
+                })
+            })
+        }
     }, []);
 
     const deleteAccount = () => {
@@ -47,7 +73,7 @@ const UserProfile = () => {
                     <div className="p-3 border-t-4 border-groupomania_border m-2">
                         <div className="w-full image overflow-hidden flex">
                             <img className="h-auto md:w-1/3"
-                                 src={`http://localhost:8080/${user.image}`}
+                                 src={`http://localhost:8080/${authState.image}`}
                                  alt=""/>
                             <div
                                 className="w-full mx-2 h-auto bg-groupomania_dark-brighter border border-black rounded-md">
@@ -55,13 +81,7 @@ const UserProfile = () => {
                                     <div
                                         className="flex items-center flex-row justify-between space-x-2 font-semibold text-groupomania_text leading-8">
                                                 <span className="flex items-center border-groupomania_border">
-                                                    <svg className="h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                         viewBox="0 0 24 24"
-                                                         stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                              stroke-width="2"
-                                                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                                    </svg>
+                                                <UserIcon className="h-5"/>
                                                     <span
                                                         className="ml-2 tracking-wide text-groupomania_text-darker">A Propos
                                                     </span>
@@ -110,12 +130,12 @@ const UserProfile = () => {
             {authState.username === user.username ? (
                 <div className="flex justify-center">
                     <p className="text-red-800 mr-2">Delete your account</p>
-                    <XCircleIcon onClick={deleteAccount} className="w-6 h-6" />
+                    <XCircleIcon onClick={deleteAccount} className="w-6 h-6"/>
                 </div>
             ) : authState.isAdmin &&
                 <div className="flex justify-center">
                     <p className="text-red-800 mr-2">Delete your account</p>
-                    <XCircleIcon onClick={deleteAccount} className="w-6 h-6" />
+                    <XCircleIcon onClick={deleteAccount} className="w-6 h-6"/>
                 </div>}
 
         </div>

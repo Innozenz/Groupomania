@@ -58,9 +58,9 @@ exports.authCheck = (req, res) => {
 }
 
 exports.userInfo = async (req, res) => {
-    const id = req.params.id;
+    const id = req.user.userId;
 
-    const info = await Users.findOne({where: {id: id}} );
+    const info = await Users.findByPk(id, {attributes: {exclude: ["password"]}});
 
     res.json(info);
 }

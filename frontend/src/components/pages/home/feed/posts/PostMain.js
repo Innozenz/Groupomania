@@ -7,7 +7,7 @@ import axios from "axios";
 import {useHistory} from "react-router-dom";
 import {Form, Formik} from "formik";
 import {Check, FileUpload} from "@mui/icons-material";
-import * as Yup from "yup";
+// import * as Yup from "yup";
 import {AuthContext} from "../../../../../helpers/AuthContext";
 
 
@@ -30,7 +30,7 @@ const PostMain = () => {
     const [listOfPosts, setListOfPosts] = useState([]);
     const [likedPosts, setLikedPosts] = useState([]);
     const [fileState, setFileState] = useState("");
-    const {authState, setAuthState} = useContext(AuthContext);
+    const {authState} = useContext(AuthContext);
 
     const addPost = () => {
         const formData = new FormData();
@@ -50,15 +50,12 @@ const PostMain = () => {
                 localStorage.removeItem("accessToken");
                 history.push(`/login`);
             } else {
-                console.log(listOfPosts);
-                console.log(fileState);
                 axios.get("http://localhost:8080/posts", {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("accessToken")
                     }
                 }).then((response) => {
                     setListOfPosts(response.data.listOfPosts);
-                    console.log(response.data);
                 })
             }
         });
@@ -68,34 +65,6 @@ const PostMain = () => {
     function toggleCommentDropDown(postId) {
         history.push(`/post/${postId}`);
     }
-
-
-    useEffect(() => {
-        if (!localStorage.getItem("accessToken")) {
-            alert("You have to be logged in to access Groupomania");
-            history.push(`/login`);
-        } else {
-            axios.get(`http://localhost:8080/auth/userinfo/${authState.userId}`, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + localStorage.getItem("accessToken")
-                }
-            }).then((response) => {
-                console.log(response.data);
-                setAuthState({
-                    email: response.data.email,
-                    username: response.data.username,
-                    firstName: response.data.firstName,
-                    lastName: response.data.lastName,
-                    job: response.data.job,
-                    userId: response.data.id,
-                    status: true,
-                    isAdmin: response.data.isAdmin,
-                    image: response.data.image
-                })
-            })
-        }
-    }, []);
 
     useEffect(() => {
         if (!localStorage.getItem("accessToken")) {
@@ -111,8 +80,6 @@ const PostMain = () => {
                 setLikedPosts(response.data.likedPosts.map((like) => {
                     return like.PostId
                 }));
-                console.log(response.data);
-                console.log(authState);
             })
         }
 
@@ -157,7 +124,7 @@ const PostMain = () => {
                         <div className="flex-shrink-0 mr-3">
                             <img className="mt-2 rounded-full w-8 h-8 sm:w-14 sm:h-14"
                                  src={`http://localhost:8080/${authState.image}`}
-                                 alt="user-image"/>
+                                 alt="user"/>
                         </div>
                         <Formik
                             initialValues={initialValues}
@@ -188,9 +155,7 @@ const PostMain = () => {
                                             Upload file(s):{" "}
                                         </FileUpload>
                                     </label>
-                                    <button onClick={addPost} className="p-2" type="submit">
-                                        <Check></Check>
-                                    </button>
+                                        <Check onClick={addPost} className="p-2" type="submit"/>
                                 </div>
                             </Form>
                         </Formik>
@@ -208,7 +173,7 @@ const PostMain = () => {
                                 <p className="mb-6">{post.content}</p>
                             </div>
                             <div className="flex leading-6 justify-center">
-                                {post.image ?  (<img className="h-2/4 w-2/4" src={`http://localhost:8080/${post.image}`}/>) : (<div></div>) }
+                                {post.image ?  (<img className="h-2/4 w-2/4" src={`http://localhost:8080/${post.image}`} alt="post"/>) : (<div></div>) }
                             </div>
                         </div>
                         <div

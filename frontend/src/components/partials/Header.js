@@ -28,18 +28,18 @@ function Header() {
                     <div className="flex flex-row">
                         <button className="rounded-md flex ml-4 items-center" onClick={pushToProfile}>
                             <img className="rounded-full w-6 h-6 sm:w-6 sm:h-6"
-                                 src={`http://localhost:8080/${authState.image}`}/>
-                            <button className="block flex w-50 py-2 px-2 text-sm">
+                                 src={`http://localhost:8080/${authState.image}`} alt=""/>
+                            <span className="block flex w-50 py-2 px-2 text-sm">
                                 {authState.username}
-                            </button>
+                            </span>
                         </button>
                         <Link to="/register">
-                            <button className="rounded-md flex ml-4 border border-black items-center">
+                            <span className="rounded-md flex ml-4 border border-black items-center">
                                 <LogoutIcon className="w-6 h-6 text-black m-1"/>
                                 <button onClick={logout} className="block flex w-50 py-2 px-2 text-sm">
                                     Déconnexion
                                 </button>
-                            </button>
+                            </span>
                         </Link>
                     </div>
                     <div

@@ -35,7 +35,7 @@ const Post = () => {
     const addComment = (postId) => {
         axios.post(`http://localhost:8080/comments/`, {
                 commentBody: newComment,
-                PostId: postId
+                PostId: postId,
             },
             {
                 headers: {
@@ -54,10 +54,7 @@ const Post = () => {
                     }
                 }).then((response) => {
                     setComments(response.data);
-                    console.log(response.data);
                 })
-                // const commentToAdd = {commentBody: newComment, id: response.data.id, PostId: postId, username: response.data.username}
-                // setComments([...comments, commentToAdd]);
                 setNewComment("");
             }
         })
@@ -70,8 +67,6 @@ const Post = () => {
             }
         }).then((response) => {
             setComments(response.data);
-            console.log(response.data);
-            console.log(authState)
         })
     }, [])
 
@@ -138,7 +133,7 @@ const Post = () => {
                         <p className="mb-6">{postObject.content}</p>
                     </div>
                     <div className="leading-6">
-                        {postObject.image ?  (<img src={`http://localhost:8080/${postObject.image}`} alt="post-image"/>) : (<div></div>) }
+                        {postObject.image ?  (<img src={`http://localhost:8080/${postObject.image}`} alt="post"/>) : (<div></div>) }
                     </div>
                 </div>
                 <div
@@ -160,7 +155,7 @@ const Post = () => {
                             <div className="flex-shrink-0 mr-3">
                                 <img className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
                                      src={`http://localhost:8080/${authState.image}`}
-                                     alt=""/>
+                                     alt="user"/>
                             </div>
                             <form>
                 <textarea onChange={(event) => {
@@ -187,8 +182,8 @@ const Post = () => {
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0 mr-3">
                                                 <img className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                                                     src={`http://localhost:8080/${authState.image}`}
-                                                     alt=""/>
+                                                     src={`http://localhost:8080/${comment.image}`}
+                                                     alt="user"/>
                                             </div>
                                             <div
                                                 className="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">

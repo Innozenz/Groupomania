@@ -3,7 +3,9 @@ const { Comments } = require("../models");
 exports.createComment = async (req, res) => {
     const comment = req.body
     const username = req.user.username;
+    const image = req.user.image;
     comment.username = username;
+    comment.image = image;
     await Comments.create(comment);
     res.json(comment);
 }

@@ -25,13 +25,10 @@ const Login = () => {
         instance.post("auth/login", data, {headers: {
                 Authorization: "Bearer " + localStorage.getItem("accessToken")
             }}).then((response) => {
-            console.log(response.data);
-            console.log(data)
             localStorage.setItem("accessToken", response.data.token);
             setAuthState({email: response.data.email, username: response.data.username, userId: response.data.userId, status: true, isAdmin: response.data.isAdmin, image: response.data.image});
             history.push(`/`);
         }).catch((error) => {
-            console.log(error);
         })
     }
 
