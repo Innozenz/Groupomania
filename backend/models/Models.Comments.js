@@ -4,15 +4,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        username: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        image: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
     })
+
+    Comments.associate = (models) => {
+        Comments.belongsTo(models.Users, { foreignKey:'UserId'})
+    };
 
     return Comments;
 }

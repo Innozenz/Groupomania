@@ -73,7 +73,7 @@ const UserProfile = () => {
                     <div className="p-3 border-t-4 border-groupomania_border m-2">
                         <div className="w-full image overflow-hidden flex">
                             <img className="h-auto md:w-1/3"
-                                 src={`http://localhost:8080/${authState.image}`}
+                                 src={`http://localhost:8080/${user.image}`}
                                  alt=""/>
                             <div
                                 className="w-full mx-2 h-auto bg-groupomania_dark-brighter border border-black rounded-md">

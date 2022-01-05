@@ -9,8 +9,8 @@ import {AuthContext} from "../../../../../helpers/AuthContext";
 const Post = () => {
     let history = useHistory();
     let {id} = useParams();
-    const [postObject, setPostObject] = useState({});
-    const {authState} = useContext(AuthContext);
+    const [postObject, setPostObject] = useState([]);
+    const {authState, setAuthState} = useContext(AuthContext);
 
 
     useEffect(() => {
@@ -23,6 +23,7 @@ const Post = () => {
                 setPostObject(response.data);
             })
         } else {
+            alert("You have to be logged in to access Groupomania");
             history.push(`/login`);
         }
 
@@ -54,6 +55,7 @@ const Post = () => {
                     }
                 }).then((response) => {
                     setComments(response.data);
+                    console.log(response.data);
                 })
                 setNewComment("");
             }
@@ -68,7 +70,33 @@ const Post = () => {
         }).then((response) => {
             setComments(response.data);
         })
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        if (!localStorage.getItem("accessToken")) {
+            alert("You have to be logged in to access Groupomania");
+            history.push(`/login`);
+        } else {
+            axios.get(`http://localhost:8080/auth/userinfo/${authState.userId}`, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                }
+            }).then((response) => {
+                setAuthState({
+                    email: response.data.email,
+                    username: response.data.username,
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    job: response.data.job,
+                    userId: response.data.id,
+                    status: true,
+                    isAdmin: response.data.isAdmin,
+                    image: response.data.image
+                })
+            })
+        }
+    }, []);
 
     const deleteComment = (id) => {
 
@@ -110,23 +138,24 @@ const Post = () => {
 
             setPostObject({...postObject, content: newPostText})
         }
-
     }
+
 
     return (
         <div
             className="relative flex justify-center items-center bg-groupomania_dark text-groupomania_text flex-col-reverse">
-            <div className={"w-full lg:w-1/2 px-6 py-4 mb-24"} key={postObject.id} index={postObject.id}>
+            {postObject.map((postObject) => {
+            return <div className={"w-full lg:w-1/2 px-6 py-4 mb-24"} key={postObject.id} index={postObject.id}>
                 <div className="border border-black bg-groupomania_dark-brighter rounded-md p-4">
                     <div className="flex flex-row justify-between">
                         <h5 className="text-gray-100 text-sm mb-3 ml-4">Publié par {" "}
-                            {postObject.username}, {moment(postObject.createdAt).fromNow()}</h5>
-                        {authState.username === postObject.username ?
+                            {postObject.User.username}, {moment(postObject.createdAt).fromNow()}</h5>
+                        {authState.username === postObject.User.username ?
                             <DeleteSharp onClick={() => {deletePost(postObject.id)}} />
                          : authState.isAdmin && <DeleteSharp onClick={() => {deletePost(postObject.id)}} />}
                     </div>
                     <div className="leading-6 bodyPost" onClick={() => {
-                        if (authState.username === postObject.username) {
+                        if (authState.username === postObject.User.username) {
                             editPost("bodyPost");
                         }
                     }}>
@@ -182,17 +211,17 @@ const Post = () => {
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0 mr-3">
                                                 <img className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                                                     src={`http://localhost:8080/${comment.image}`}
+                                                     src={`http://localhost:8080/${comment.User.image}`}
                                                      alt="user"/>
                                             </div>
                                             <div
                                                 className="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
-                                                <strong>{comment.username}</strong>
+                                                <strong>{comment.User.username}</strong>
                                                 <span
                                                     className="text-xs text-gray-400">  {moment(comment.createdAt).fromNow()}</span>
                                                 <p>{comment.commentBody}</p>
                                             </div>
-                                            {authState.username === comment.username ?
+                                            {authState.username === comment.User.username ?
                                                 <DeleteForever className="ml-2" onClick={() => {
                                                     deleteComment(comment.id)
                                                 }}/> : authState.isAdmin && <DeleteForever className="ml-2" onClick={() => {
@@ -206,6 +235,7 @@ const Post = () => {
                     </div>
                 </div>
             </div>
+            })}
         </div>
     );
 };

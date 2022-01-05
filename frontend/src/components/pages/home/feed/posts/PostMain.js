@@ -7,7 +7,7 @@ import axios from "axios";
 import {useHistory} from "react-router-dom";
 import {Form, Formik} from "formik";
 import {Check, FileUpload} from "@mui/icons-material";
-// import * as Yup from "yup";
+import * as Yup from "yup";
 import {AuthContext} from "../../../../../helpers/AuthContext";
 
 
@@ -16,10 +16,10 @@ const PostMain = () => {
     let history = useHistory();
 
 
-    // const validationSchema =
-    //     Yup.object().shape({
-    //         content: Yup.string().required()
-    //     })
+    const validationSchema =
+        Yup.object().shape({
+            content: Yup.string().required()
+        })
 
 
     const initialValues = {
@@ -30,35 +30,41 @@ const PostMain = () => {
     const [listOfPosts, setListOfPosts] = useState([]);
     const [likedPosts, setLikedPosts] = useState([]);
     const [fileState, setFileState] = useState("");
-    const {authState} = useContext(AuthContext);
+    const {authState, setAuthState} = useContext(AuthContext);
 
     const addPost = () => {
-        const formData = new FormData();
-        formData.append("image", fileState);
-        formData.append("content", newPost);
+        if (newPost === "") {
+            alert("Can't be empty")
+        } else {
+            const formData = new FormData();
+            formData.append("image", fileState);
+            formData.append("content", newPost);
 
-        axios.post("http://localhost:8080/posts", formData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + localStorage.getItem("accessToken")
-                }
-            }
-        ).then((response) => {
-            if (response.data.error) {
-                alert("You have to be logged in to post a post");
-                localStorage.removeItem("accessToken");
-                history.push(`/login`);
-            } else {
-                axios.get("http://localhost:8080/posts", {
+            axios.post("http://localhost:8080/posts", formData,
+                {
                     headers: {
+                        "Content-Type": "multipart/form-data",
                         Authorization: "Bearer " + localStorage.getItem("accessToken")
                     }
-                }).then((response) => {
-                    setListOfPosts(response.data.listOfPosts);
-                })
-            }
-        });
+                }
+            ).then((response) => {
+                if (response.data.error) {
+                    alert("You have to be logged in to post a post");
+                    localStorage.removeItem("accessToken");
+                    history.push(`/login`);
+                } else {
+                    axios.get("http://localhost:8080/posts", {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.getItem("accessToken")
+                        }
+                    }).then((response) => {
+                        setListOfPosts(response.data.listOfPosts);
+                    })
+                }
+            });
+
+        }
+
     }
 
 
@@ -84,6 +90,35 @@ const PostMain = () => {
         }
 
     }, []);
+
+    useEffect(() => {
+        if (!localStorage.getItem("accessToken")) {
+            alert("You have to be logged in to access Groupomania");
+            history.push(`/login`);
+        } else {
+            axios.get(`http://localhost:8080/auth/userinfo/${authState.userId}`, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                }
+            }).then((response) => {
+                setAuthState({
+                    email: response.data.email,
+                    username: response.data.username,
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    job: response.data.job,
+                    userId: response.data.id,
+                    status: true,
+                    isAdmin: response.data.isAdmin,
+                    image: response.data.image
+                })
+            })
+        }
+    }, []);
+
+    console.log(listOfPosts);
+    console.log(likedPosts);
 
     const likeAPost = (postId) => {
         axios.post("http://localhost:8080/likes", {PostId: postId}, {
@@ -128,6 +163,7 @@ const PostMain = () => {
                         </div>
                         <Formik
                             initialValues={initialValues}
+                            validationSchema={validationSchema}
                         >
                             <Form className="flex flex-grow border border-gray-300 ml-4 mr-2 rounded-md" encType="multipart/form-data">
                                 <textarea
@@ -155,7 +191,9 @@ const PostMain = () => {
                                             Upload file(s):{" "}
                                         </FileUpload>
                                     </label>
-                                        <Check onClick={addPost} className="p-2" type="submit"/>
+                                    <span  className="p-2">
+                                        <Check onClick={addPost} type="submit"/>
+                                    </span>
                                 </div>
                             </Form>
                         </Formik>
@@ -168,7 +206,7 @@ const PostMain = () => {
                     return <div className={"w-full lg:w-1/2 px-6 py-4 mb-24"} key={post.id} index={post.id}>
                         <div className="border border-black bg-groupomania_dark-brighter rounded-md p-4">
                             <h5 className="text-gray-100 text-sm mb-3 ml-4">Publié par {" "}
-                                {post.username}, {moment(post.createdAt).fromNow()}</h5>
+                                {post.User.username}, {moment(post.createdAt).fromNow()}</h5>
                             <div className="leading-6">
                                 <p className="mb-6">{post.content}</p>
                             </div>
