@@ -22,7 +22,7 @@ const Register = () => {
 
     const validationSchema = Yup.object().shape({
         email: Yup.string().email("Invalid email").required("Required"),
-        username: Yup.string().required("Required"),
+        username: Yup.string().required("Please enter a username"),
         password: Yup.string().required("Please enter your password").matches(
             /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
             "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
@@ -66,6 +66,7 @@ const Register = () => {
                                 required
                                 autoComplete="current-email"
                             />
+                            <ErrorMessage name="email" />
                         </div>
                         <div className="mb-4">
                             <label
@@ -83,6 +84,7 @@ const Register = () => {
                                 required
                                 autoComplete="current-username"
                             />
+                            <ErrorMessage name="username" />
                         </div>
                         <div className="mb-6">
                             <label

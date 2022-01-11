@@ -23,12 +23,6 @@ exports.getPostById = async (req, res) => {
     res.json([postObject]);
 }
 
-exports.editPost = async (req, res) => {
-    const {newText, id} = req.body;
-    await Posts.update({content: newText}, {where: {id: id}});
-    res.json(newText);
-}
-
 exports.deletePost = async (req, res) => {
     const postId = req.params.postId;
     await Posts.destroy({

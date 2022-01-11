@@ -15,7 +15,5 @@ router.delete("/:postId", validateToken, postsCtrl.deletePost);
 
 router.get("/authCheck", validateToken, usersCtrl.authCheck);
 
-router.put("/postText", validateToken, postsCtrl.editPost);
-
 
 module.exports = router;

@@ -21,13 +21,13 @@ function Header() {
     return (
         <div>
             <header className="w-full bg-groupomania_dark p-2">
-                <div className="relative flex items-center content-around justify-between">
+                <div className="relative sm:flex items-center content-around justify-between">
                     <Link to="/">
                         <img className="w-auto h-11" src={Icon} alt=""/>
                     </Link>
-                    <div className="flex flex-row">
-                        <button className="rounded-md flex ml-4 items-center" onClick={pushToProfile}>
-                            <img className="rounded-full w-6 h-6 sm:w-6 sm:h-6"
+                    <div className="flex flex-row mb-6 mt-6">
+                        <button className="flex ml-4 items-center rounded-md border border-black" onClick={pushToProfile}>
+                            <img className="rounded-full w-6 h-6 sm:w-6 sm:h-6 ml-1"
                                  src={`http://localhost:8080/${authState.image}`} alt=""/>
                             <span className="block flex w-50 py-2 px-2 text-sm">
                                 {authState.username}

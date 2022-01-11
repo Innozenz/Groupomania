@@ -12,7 +12,7 @@ const BoardHeader = () => {
                         {/*    alt=""/>*/}
                     </div>
                     <div className="flex pt-2 pl-4 items-center">
-                        <h1 className="text-gray-200 text-4xl">Quoi de neuf sur Groupomania?</h1>
+                        <h1 className="text-gray-200 sm:text-4xl">Quoi de neuf sur Groupomania?</h1>
                     </div>
                 </div>
             </div>

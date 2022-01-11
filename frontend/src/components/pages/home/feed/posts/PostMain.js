@@ -30,12 +30,9 @@ const PostMain = () => {
     const [listOfPosts, setListOfPosts] = useState([]);
     const [likedPosts, setLikedPosts] = useState([]);
     const [fileState, setFileState] = useState("");
-    const {authState, setAuthState} = useContext(AuthContext);
+    const {authState} = useContext(AuthContext);
 
     const addPost = () => {
-        if (newPost === "") {
-            alert("Can't be empty")
-        } else {
             const formData = new FormData();
             formData.append("image", fileState);
             formData.append("content", newPost);
@@ -60,15 +57,14 @@ const PostMain = () => {
                     }).then((response) => {
                         setListOfPosts(response.data.listOfPosts);
                     })
+                    setNewPost("");
                 }
             });
-
-        }
 
     }
 
 
-    function toggleCommentDropDown(postId) {
+    function pushToPost(postId) {
         history.push(`/post/${postId}`);
     }
 
@@ -90,35 +86,6 @@ const PostMain = () => {
         }
 
     }, []);
-
-    useEffect(() => {
-        if (!localStorage.getItem("accessToken")) {
-            alert("You have to be logged in to access Groupomania");
-            history.push(`/login`);
-        } else {
-            axios.get(`http://localhost:8080/auth/userinfo/${authState.userId}`, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + localStorage.getItem("accessToken")
-                }
-            }).then((response) => {
-                setAuthState({
-                    email: response.data.email,
-                    username: response.data.username,
-                    firstName: response.data.firstName,
-                    lastName: response.data.lastName,
-                    job: response.data.job,
-                    userId: response.data.id,
-                    status: true,
-                    isAdmin: response.data.isAdmin,
-                    image: response.data.image
-                })
-            })
-        }
-    }, []);
-
-    console.log(listOfPosts);
-    console.log(likedPosts);
 
     const likeAPost = (postId) => {
         axios.post("http://localhost:8080/likes", {PostId: postId}, {
@@ -178,9 +145,6 @@ const PostMain = () => {
                                 <input className="hidden"
                                        id="file"
                                        type="file"
-                                    // The onChange should trigger updates whenever
-                                    // the value changes?
-                                    // Try to select a file, then try selecting another one.
                                        onChange={event => {
                                            setFileState(event.target.files[0])
                                        }}
@@ -205,9 +169,14 @@ const PostMain = () => {
                 {listOfPosts.map((post, key) => {
                     return <div className={"w-full lg:w-1/2 px-6 py-4 mb-24"} key={post.id} index={post.id}>
                         <div className="border border-black bg-groupomania_dark-brighter rounded-md p-4">
-                            <h5 className="text-gray-100 text-sm mb-3 ml-4">Publié par {" "}
-                                {post.User.username}, {moment(post.createdAt).fromNow()}</h5>
-                            <div className="leading-6">
+                            <div className="flex items-center">
+                                <img className="mt-2 rounded-full w-8 h-8 sm:w-14 sm:h-14"
+                                     src={`http://localhost:8080/${post.User.image}`}
+                                     alt="user"/>
+                                <h5 className="text-gray-100 text-sm mb-3 ml-4">Publié par {" "}
+                                    {post.User.username}, <br/> {moment(post.createdAt).fromNow()}</h5>
+                            </div>
+                            <div className="leading-6 mt-6">
                                 <p className="mb-6">{post.content}</p>
                             </div>
                             <div className="flex leading-6 justify-center">
@@ -225,7 +194,7 @@ const PostMain = () => {
                             </div>
 
                             <div className="w-1/2 inputIcon rounded-none rounded-br-2xl"
-                                 onClick={() => toggleCommentDropDown(post.id)} key={post.id}>
+                                 onClick={() => pushToPost(post.id)} key={post.id}>
                                 <ChatAltIcon className="h-4"/>
                                 <p className="text-xs sm:text-base">Commentaires</p>
                             </div>

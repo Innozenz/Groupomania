@@ -5,12 +5,13 @@ const jwt = require("jsonwebtoken");
 require('dotenv').config();
 
 exports.createUser = async (req, res) => {
-    const {email, username, password} = req.body;
+    const {email, username, password, image} = req.body;
     bcrypt.hash(password, 10).then((hash) => {
         Users.create({
             email: email,
             username: username,
             password: hash,
+            image: "images\\istockphoto-1223671392-170667a.jpg"
         }).then(() => {
             res.json("User registered");
         }).catch((err) => {

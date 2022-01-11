@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Link, useHistory} from "react-router-dom";
-import {PencilIcon, UserIcon, XCircleIcon} from "@heroicons/react/solid";
+import {PencilIcon, XCircleIcon} from "@heroicons/react/solid";
 import {useParams} from "react-router-dom";
 import axios from "axios";
 import {AuthContext} from "../../../helpers/AuthContext";
@@ -12,27 +12,17 @@ const UserProfile = () => {
     let history = useHistory();
 
     useEffect(() => {
-        axios.get(`http://localhost:8080/auth/userinfo/${id}`, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: "Bearer " + localStorage.getItem("accessToken")
-            }
-        }).then((response) => {
-            setUser(response.data);
-        })
-    }, []);
-
-    useEffect(() => {
         if (!localStorage.getItem("accessToken")) {
             alert("You have to be logged in to access Groupomania");
             history.push(`/login`);
         } else {
-            axios.get(`http://localhost:8080/auth/userinfo/${authState.userId}`, {
+            axios.get(`http://localhost:8080/auth/userinfo/${id}`, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: "Bearer " + localStorage.getItem("accessToken")
                 }
             }).then((response) => {
+                setUser(response.data);
                 setAuthState({
                     email: response.data.email,
                     username: response.data.username,
@@ -47,6 +37,7 @@ const UserProfile = () => {
             })
         }
     }, []);
+
 
     const deleteAccount = () => {
         axios.delete(`http://localhost:8080/auth/deleteUser/${id}`, {
@@ -65,78 +56,75 @@ const UserProfile = () => {
         });
     }
 
+    const pushToEdit = () => {
+        history.push("/edit");
+    }
+
     return (
-        <div className="container mx-auto my-5 p-5 bg">
-            <div className="md:flex no-wrap md:-mx-2 flex-col items-center">
-                <div
-                    className="w-full md:w-9/12 md:mx-2 mb-3 bg-groupomania_dark-brighter border border-black rounded-md">
-                    <div className="p-3 border-t-4 border-groupomania_border m-2">
-                        <div className="w-full image overflow-hidden flex">
-                            <img className="h-auto md:w-1/3"
-                                 src={`http://localhost:8080/${user.image}`}
-                                 alt=""/>
-                            <div
-                                className="w-full mx-2 h-auto bg-groupomania_dark-brighter border border-black rounded-md">
-                                <div className="p-3 shadow-sm rounded-sm">
-                                    <div
-                                        className="flex items-center flex-row justify-between space-x-2 font-semibold text-groupomania_text leading-8">
-                                                <span className="flex items-center border-groupomania_border">
-                                                <UserIcon className="h-5"/>
-                                                    <span
-                                                        className="ml-2 tracking-wide text-groupomania_text-darker">A Propos
-                                                    </span>
-                                                </span>
-                                        {authState.username === user.username ? (
-                                            <Link to="/edit">
-                                                <PencilIcon className="w-6 h-6"/>
-                                            </Link>
-                                        ) : authState.isAdmin && <Link to="/edit">
-                                            <PencilIcon className="w-6 h-6"/>
-                                        </Link>}
-                                    </div>
-                                    <div className="text-groupomania_text">
-                                        <div className="grid md:grid-cols-1">
-                                            <div className="grid grid-cols-2">
-                                                <div className="px-4 py-2 font-semibold">Username</div>
-                                                <div className="px-4 py-2">{user.username}</div>
-                                            </div>
-                                            <div className="grid grid-cols-2">
-                                                <div className="px-4 py-2 font-semibold">Prénom</div>
-                                                <div className="px-4 py-2">{user.firstName}</div>
-                                            </div>
-                                            <div className="grid grid-cols-2">
-                                                <div className="px-4 py-2 font-semibold">Nom</div>
-                                                <div className="px-4 py-2">{user.lastName}</div>
-                                            </div>
-                                            <div className="grid grid-cols-2">
-                                                <div className="px-4 py-2 font-semibold">Email.</div>
-                                                <div className="px-4 py-2">
-                                                    <a className="text-blue-800"
-                                                       href="mailto:jane@example.com">{user.email}</a>
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2">
-                                                <div className="px-4 py-2 font-semibold">Poste</div>
-                                                <div className="px-4 py-2">{user.job}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        <div className="flex items-center h-screen w-full justify-center">
+
+            <div className="max-w-xs">
+                <div className="bg-white shadow-xl rounded-lg py-3">
+                    <div className="photo-wrapper p-2">
+                        <img className="w-32 h-32 rounded-full mx-auto"
+                             src={`http://localhost:8080/${user.image}`}
+                             alt="profile" />
+                    </div>
+                    <div className="p-2">
+                        <h3 className="text-center text-xl text-gray-900 font-medium leading-8">{user.username}</h3>
+                        <div className="text-center text-gray-400 text-xs font-semibold text-base">
+                            <p>{user.job}</p>
                         </div>
+                        <table className="text-xs my-3">
+                            <tbody>
+                            <tr>
+                                <td className="px-2 py-2 text-base text-gray-500 font-semibold">Username</td>
+                                <td className="px-2 py-2 text-base">{user.username}</td>
+                            </tr>
+                            <tr>
+                                <td className="px-2 py-2 text-base text-gray-500 font-semibold">Nom</td>
+                                <td className="px-2 py-2 text-base">{user.lastName}</td>
+                            </tr>
+                            <tr>
+                                <td className="px-2 py-2 text-base text-gray-500 font-semibold">Prénom</td>
+                                <td className="px-2 py-2 text-base">{user.firstName}</td>
+                            </tr>
+                            <tr>
+                                <td className="px-2 py-2 text-base text-gray-500 font-semibold">Email</td>
+                                <td className="px-2 py-2 text-base">{user.email}</td>
+                            </tr>
+                            <tr>
+                                <td className="px-2 py-2 text-base text-gray-500 font-semibold">Poste</td>
+                                <td className="px-2 py-2 text-base">{user.job}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div className="flex justify-center my-3 items-baseline">
+                            {authState.username === user.username ? (
+                                <Link to="/edit">
+                                    <PencilIcon className="w-4 h-4"/>
+                                </Link>
+                            ) : authState.isAdmin && <Link to="/edit">
+                                <PencilIcon className="w-4 h-4"/>
+                            </Link>}
+                            <button onClick={pushToEdit} className="text-base italic hover:underline font-medium">Edit Profile</button>
+                        </div>
+
+                        {authState.username === user.username ? (
+                            <div className="flex justify-center">
+                                <p className="text-red-800 mr-2">Delete your account</p>
+                                <XCircleIcon onClick={deleteAccount} className="w-6 h-6"/>
+                            </div>
+                        ) : authState.isAdmin &&
+                            <div className="flex justify-center">
+                                <p className="text-red-800 mr-2">Delete your account</p>
+                                <XCircleIcon onClick={deleteAccount} className="w-6 h-6"/>
+                            </div>}
+
                     </div>
                 </div>
             </div>
-            {authState.username === user.username ? (
-                <div className="flex justify-center">
-                    <p className="text-red-800 mr-2">Delete your account</p>
-                    <XCircleIcon onClick={deleteAccount} className="w-6 h-6"/>
-                </div>
-            ) : authState.isAdmin &&
-                <div className="flex justify-center">
-                    <p className="text-red-800 mr-2">Delete your account</p>
-                    <XCircleIcon onClick={deleteAccount} className="w-6 h-6"/>
-                </div>}
 
         </div>
     );

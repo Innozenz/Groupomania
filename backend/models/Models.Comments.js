@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     })
 
     Comments.associate = (models) => {
-        Comments.belongsTo(models.Users, { foreignKey:'UserId'})
+        Comments.belongsTo(models.Users, { foreignKey:'UserId', onDelete: 'CASCADE', hooks:true})
     };
 
     return Comments;
