@@ -2,6 +2,9 @@
   "name": "projet7oc",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "6.11.1"
+  },
   "dependencies": {
     "@craco/craco": "^6.3.0",
     "@emotion/react": "^11.4.1",
